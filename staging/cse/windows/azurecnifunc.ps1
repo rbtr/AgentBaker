@@ -43,7 +43,9 @@ function Set-AzureCNIConfig
         [Parameter(Mandatory=$true)][bool]
         $IsDualStackEnabled,
         [Parameter(Mandatory=$false)][bool]
-        $IsAzureCNIOverlayEnabled
+        $IsAzureCNIOverlayEnabled,
+        [Parameter(Mandatory=$false)][bool]
+        $SkipConflistWrite
     )
     Logs-To-Event -TaskName "AKS.WindowsCSE.SetAzureCNIConfig" -TaskMessage "Start to set Azure CNI config. IsDualStackEnabled: $global:IsDualStackEnabled, IsAzureCNIOverlayEnabled: $global:IsAzureCNIOverlayEnabled, IsDisableWindowsOutboundNat: $global:IsDisableWindowsOutboundNat, CiliumDataplaneEnabled: $global:CiliumDataplaneEnabled"
 
@@ -256,7 +258,12 @@ function Set-AzureCNIConfig
     }
     $configJson.plugins[0].AdditionalArgs += $jsonContent
 
-    $configJson | ConvertTo-Json -depth 20 | Out-File -encoding ASCII -filepath $fileName
+    if ($SkipConflistWrite) {
+        Write-Log "Skipping Azure CNI conflist write because CNS owns Windows CNI conflist generation"
+    }
+    else {
+        $configJson | ConvertTo-Json -depth 20 | Out-File -encoding ASCII -filepath $fileName
+    }
 }
 
 function GetBroadestRangesForEachAddress{

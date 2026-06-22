@@ -1766,6 +1766,9 @@ type NodeBootstrappingConfiguration struct {
 
 	// Version is required for aks-node-controller application to determine the version of the config file.
 	Version string
+	// EnableCNSWindowsCNIConflistGeneration skips AgentBaker's Windows Azure CNI conflist write.
+	// CNS is expected to write the final conflist when this is enabled.
+	EnableCNSWindowsCNIConflistGeneration bool
 }
 
 type SSHStatus int
